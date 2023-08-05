@@ -11,15 +11,18 @@
     "type-check": "tsc"
   },
   "dependencies": {
+    "@lineup-lite/hooks": "^1.7.0",
     "eslint-plugin-simple-import-sort": "^9.0.0",
     "localforage": "^1.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.7.0",
+    "react-table": "^7.8.0",
     "react-transition-state": "^2.0.2",
     "vite-tsconfig-paths": "^4.0.5"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.4",
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.9",
     "@types/react-router-dom": "^5.3.3",
