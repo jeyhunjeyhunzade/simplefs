@@ -1,17 +1,16 @@
 const pool = require("../config");
 const Auth = require("../helpers/auth");
-// do i need parseInt() when getting an id from url
 
 const Users = {
   loginUser: async (request, response) => {
-    const {email, password} = request.body;
+    const { email, password } = request.body;
     if (!email || !password) {
-      return response.status(400).send({message: "Some values are missing"});
+      return response.status(400).send({ message: "Some values are missing" });
     }
     if (!Auth.isValidEmail(email)) {
       return response
         .status(400)
-        .send({message: "Please enter a valid email address"});
+        .send({ message: "Please enter a valid email address" });
     }
 
     // const hashPassword = Auth.hashPassword(password);
@@ -25,7 +24,7 @@ const Users = {
       console.log("===userById===>", userById);
       if (password === userById.password) {
         const token = Auth.generateToken(userById.id);
-        response.status(201).json({userById, token});
+        response.status(201).json({ userById, token });
       } else {
         response.status(404).send("Password does not match");
       }
@@ -34,14 +33,14 @@ const Users = {
     }
   },
   createUser: async (request, response) => {
-    const {email, password} = request.body;
+    const { email, password } = request.body;
     if (!email || !password) {
-      return response.status(400).send({message: "Some values are missing"});
+      return response.status(400).send({ message: "Some values are missing" });
     }
     if (!Auth.isValidEmail(email)) {
       return response
         .status(400)
-        .send({message: "Please enter a valid email address"});
+        .send({ message: "Please enter a valid email address" });
     }
 
     const hashPassword = Auth.hashPassword(password);
@@ -57,9 +56,7 @@ const Users = {
   },
   getUsers: async (_, response) => {
     try {
-      const allUsers = await pool.query(
-        "SELECT * FROM users ORDER BY user_id ASC"
-      );
+      const allUsers = await pool.query("SELECT * FROM users ORDER BY id ASC");
       response.status(200).json(allUsers.rows);
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
@@ -68,10 +65,9 @@ const Users = {
   getUserById: async (request, response) => {
     try {
       const id = parseInt(request.params.id);
-      const userById = await pool.query(
-        "SELECT * FROM users WHERE user_id = $1",
-        [id]
-      );
+      const userById = await pool.query("SELECT * FROM users WHERE id = $1", [
+        id,
+      ]);
       response.status(200).json(userById.rows);
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
@@ -80,9 +76,9 @@ const Users = {
   updateUser: async (request, response) => {
     try {
       const id = parseInt(request.params.id);
-      const {name, email} = request.body;
+      const { name, email } = request.body;
       const updatedUser = await pool.query(
-        "UPDATE users SET name = $1, email = $2 WHERE user_id = $3",
+        "UPDATE users SET name = $1, email = $2 WHERE id = $3",
         [name, email, id]
       );
       response.status(200).send(`User updated with ID: ${id}`);
@@ -93,9 +89,7 @@ const Users = {
   deleteUser: async (request, response) => {
     try {
       const id = parseInt(request.params.id);
-      const deletedUser = pool.query("DELETE FROM users WHERE user_id = $1", [
-        id,
-      ]);
+      const deletedUser = pool.query("DELETE FROM users WHERE id = $1", [id]);
       response.status(200).send(`User deleted with ID: ${id}`);
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
