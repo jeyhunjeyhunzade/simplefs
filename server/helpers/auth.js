@@ -1,6 +1,12 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
+const pool = require("../config");
+
+const userStatus = {
+  active: "ACTIVE",
+  blocked: "BLOCKED",
+};
 
 const Auth = {
   /**
@@ -38,9 +44,8 @@ const Auth = {
     const token = jwt.sign(
       {
         userId: id,
-        name: "lol",
       },
-      process.env.SECRET_KEY,
+      process.env.SECRET,
       { expiresIn: "1d" }
     );
     return token;
@@ -48,22 +53,37 @@ const Auth = {
   /**
    * Authenticate Token
    */
-  authenticateToken: (req, res, next) => {
+  authenticateToken: async (req, res, next) => {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
-    if (token === null)
-      return res
-        .sendStatus(401)
-        .send({ auth: false, message: "No token provided." }); // if there isn't any token
+    if (token === null) {
+      return res.status(401).send("No token provided."); // if there isn't any token
+    }
 
-    jwt.verify(token, process.env.SECRET, (err, user) => {
-      if (err)
-        return res
-          .sendStatus(403)
-          .send({ auth: false, message: "Failed to authenticate token." });
+    jwt.verify(token, process.env.SECRET, async (err, user) => {
+      if (err) {
+        return response.status(403).send("Failed to authenticate token.");
+      }
       req.user = user;
-      console.log("=====user===>", user);
-      next(); // pass the execution off to whatever request the client intended
+      try {
+        const userQuery = await pool.query(
+          "SELECT * FROM users WHERE id = $1",
+          [user.userId]
+        );
+
+        const userById = userQuery.rows[0];
+
+        if (!userById) {
+          return res.status(404).send("User can not be found.");
+        }
+
+        if (userById.status !== userStatus.active) {
+          return res.status(403).send("User is blocked");
+        }
+        next(); // pass the execution off to whatever request the client intended
+      } catch (error) {
+        console.log(error.message, "Error message: ", response.status);
+      }
     });
   },
 };
