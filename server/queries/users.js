@@ -12,37 +12,44 @@ const Users = {
     if (!email || !password) {
       return response.status(400).send({ message: "Some values are missing" });
     }
+
     if (!Auth.isValidEmail(email)) {
       return response
         .status(400)
         .send({ message: "Please enter a valid email address" });
     }
 
-    // const hashPassword = Auth.hashPassword(password);
-
     try {
       const userQuery = await pool.query(
         "SELECT * FROM users WHERE email = $1",
         [email]
       );
+
       userById = userQuery.rows[0];
-      console.log("===userById===>", userById);
-      if (password === userById.password) {
-        const token = Auth.generateToken(userById.id);
-        response.status(201).json({ userById, token });
-      } else {
-        response.status(400).send("Email and Password does not match");
+      if (!userById) {
+        return response.status(404).send("User can not be found.");
       }
+
+      if (password !== userById.password) {
+        return response.status(400).send("email and password does not match");
+      }
+
+      if (userById.status !== userStatus.active) {
+        return response.status(403).send("User is blocked");
+      }
+
+      const token = Auth.generateToken(userById.id);
+      return response.status(201).json({ userById, token });
     } catch (error) {
       console.log(error.message, "Error message: ", response.status);
     }
   },
-
   createUser: async (request, response) => {
     const { email, password, name } = request.body;
     if (!email || !password || !name) {
       return response.status(400).send({ message: "Some values are missing" });
     }
+
     if (!Auth.isValidEmail(email)) {
       return response
         .status(400)
@@ -60,7 +67,6 @@ const Users = {
       console.log(error.message, "response status: ", response.status);
     }
   },
-
   getUsers: async (_, response) => {
     try {
       const allUsers = await pool.query("SELECT * FROM users ORDER BY id ASC");
@@ -69,7 +75,6 @@ const Users = {
       console.log(error.message, "response status: ", response.status);
     }
   },
-
   getUserById: async (request, response) => {
     try {
       const id = parseInt(request.params.id);
@@ -77,6 +82,16 @@ const Users = {
         id,
       ]);
       response.status(200).json(userById.rows);
+    } catch (error) {
+      console.log(error.message, "response status: ", response.status);
+    }
+  },
+
+  deleteUser: async (request, response) => {
+    try {
+      const id = parseInt(request.params.id);
+      const deletedUser = pool.query("DELETE FROM users WHERE id = $1", [id]);
+      response.status(200).send(`User deleted with ID: ${id}`);
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
@@ -103,16 +118,6 @@ const Users = {
         [userStatus.active, id]
       );
       response.status(200).send(`User unblocked with ID: ${id}`);
-    } catch (error) {
-      console.log(error.message, "response status: ", response.status);
-    }
-  },
-
-  deleteUser: async (request, response) => {
-    try {
-      const id = parseInt(request.params.id);
-      const deletedUser = pool.query("DELETE FROM users WHERE id = $1", [id]);
-      response.status(200).send(`User deleted with ID: ${id}`);
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
