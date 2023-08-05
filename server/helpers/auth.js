@@ -40,8 +40,8 @@ const Auth = {
         userId: id,
         name: "lol",
       },
-      process.env.SECRET,
-      {expiresIn: "7d"}
+      process.env.SECRET_KEY,
+      { expiresIn: "1d" }
     );
     return token;
   },
@@ -54,13 +54,13 @@ const Auth = {
     if (token === null)
       return res
         .sendStatus(401)
-        .send({auth: false, message: "No token provided."}); // if there isn't any token
+        .send({ auth: false, message: "No token provided." }); // if there isn't any token
 
     jwt.verify(token, process.env.SECRET, (err, user) => {
       if (err)
         return res
           .sendStatus(403)
-          .send({auth: false, message: "Failed to authenticate token."});
+          .send({ auth: false, message: "Failed to authenticate token." });
       req.user = user;
       console.log("=====user===>", user);
       next(); // pass the execution off to whatever request the client intended

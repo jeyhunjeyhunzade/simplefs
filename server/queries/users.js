@@ -1,6 +1,11 @@
 const pool = require("../config");
 const Auth = require("../helpers/auth");
 
+const userStatus = {
+  active: "ACTIVE",
+  blocked: "BLOCKED",
+};
+
 const Users = {
   loginUser: async (request, response) => {
     const { email, password } = request.body;
@@ -34,8 +39,8 @@ const Users = {
   },
 
   createUser: async (request, response) => {
-    const { email, password } = request.body;
-    if (!email || !password) {
+    const { email, password, name } = request.body;
+    if (!email || !password || !name) {
       return response.status(400).send({ message: "Some values are missing" });
     }
     if (!Auth.isValidEmail(email)) {
@@ -47,8 +52,8 @@ const Users = {
     const hashPassword = Auth.hashPassword(password);
     try {
       const newUser = await pool.query(
-        "INSERT INTO users ( email, password) VALUES ($1, $2) RETURNING *",
-        [email, hashPassword]
+        "INSERT INTO users ( email, password, name) VALUES ($1, $2) RETURNING *",
+        [email, hashPassword, name]
       );
       response.status(201).json(newUser.rows[0]);
     } catch (error) {
@@ -77,15 +82,27 @@ const Users = {
     }
   },
 
-  updateUser: async (request, response) => {
+  blockUser: async (request, response) => {
     try {
       const id = parseInt(request.params.id);
-      const { name, email } = request.body;
-      const updatedUser = await pool.query(
-        "UPDATE users SET name = $1, email = $2 WHERE id = $3",
-        [name, email, id]
+      const blockedUser = await pool.query(
+        "UPDATE users SET status = $1 WHERE id = $2",
+        [userStatus.blocked, id]
       );
-      response.status(200).send(`User updated with ID: ${id}`);
+      response.status(200).send(`User blocked with ID: ${id}`);
+    } catch (error) {
+      console.log(error.message, "response status: ", response.status);
+    }
+  },
+
+  unBlockUser: async (request, response) => {
+    try {
+      const id = parseInt(request.params.id);
+      const blockedUser = await pool.query(
+        "UPDATE users SET status = $1 WHERE id = $2",
+        [userStatus.active, id]
+      );
+      response.status(200).send(`User unblocked with ID: ${id}`);
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
