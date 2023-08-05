@@ -14,7 +14,7 @@ const Users = {
     }
 
     // const hashPassword = Auth.hashPassword(password);
-    // const hashPassword = password;
+
     try {
       const userQuery = await pool.query(
         "SELECT * FROM users WHERE email = $1",
@@ -26,12 +26,13 @@ const Users = {
         const token = Auth.generateToken(userById.id);
         response.status(201).json({ userById, token });
       } else {
-        response.status(404).send("Password does not match");
+        response.status(400).send("Email and Password does not match");
       }
     } catch (error) {
       console.log(error.message, "Error message: ", response.status);
     }
   },
+
   createUser: async (request, response) => {
     const { email, password } = request.body;
     if (!email || !password) {
@@ -54,6 +55,7 @@ const Users = {
       console.log(error.message, "response status: ", response.status);
     }
   },
+
   getUsers: async (_, response) => {
     try {
       const allUsers = await pool.query("SELECT * FROM users ORDER BY id ASC");
@@ -62,6 +64,7 @@ const Users = {
       console.log(error.message, "response status: ", response.status);
     }
   },
+
   getUserById: async (request, response) => {
     try {
       const id = parseInt(request.params.id);
@@ -73,6 +76,7 @@ const Users = {
       console.log(error.message, "response status: ", response.status);
     }
   },
+
   updateUser: async (request, response) => {
     try {
       const id = parseInt(request.params.id);
@@ -86,6 +90,7 @@ const Users = {
       console.log(error.message, "response status: ", response.status);
     }
   },
+
   deleteUser: async (request, response) => {
     try {
       const id = parseInt(request.params.id);
