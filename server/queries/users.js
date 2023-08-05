@@ -1,5 +1,6 @@
 const pool = require("../config");
 const Auth = require("../helpers/auth");
+// do i need parseInt() when getting an id from url
 
 const userStatus = {
   active: "ACTIVE",
@@ -59,8 +60,8 @@ const Users = {
     const hashPassword = Auth.hashPassword(password);
     try {
       const newUser = await pool.query(
-        "INSERT INTO users ( email, password, name) VALUES ($1, $2) RETURNING *",
-        [email, hashPassword, name]
+        "INSERT INTO users ( email, password, name, status) VALUES ($1, $2, $3, $4) RETURNING *",
+        [email, hashPassword, name, userStatus.active]
       );
       response.status(201).json(newUser.rows[0]);
     } catch (error) {
@@ -89,9 +90,12 @@ const Users = {
 
   deleteUser: async (request, response) => {
     try {
-      const id = parseInt(request.params.id);
-      const deletedUser = pool.query("DELETE FROM users WHERE id = $1", [id]);
-      response.status(200).send(`User deleted with ID: ${id}`);
+      const idArray = request.params.idArray;
+
+      const deletedUser = pool.query("DELETE FROM users WHERE id = ANY($1)", [
+        idArray,
+      ]);
+      response.status(200).send(`Users deleted with ID: ${idArray}`);
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
@@ -99,12 +103,14 @@ const Users = {
 
   blockUser: async (request, response) => {
     try {
-      const id = parseInt(request.params.id);
+      const idArray = request.params.idArray;
+
       const blockedUser = await pool.query(
-        "UPDATE users SET status = $1 WHERE id = $2",
-        [userStatus.blocked, id]
+        "UPDATE users SET status = $1 WHERE id = ANY($2)",
+        [userStatus.blocked, idArray]
       );
-      response.status(200).send(`User blocked with ID: ${id}`);
+
+      response.status(200).send(`Users blocked with ID: ${idArray}`);
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
@@ -112,12 +118,13 @@ const Users = {
 
   unBlockUser: async (request, response) => {
     try {
-      const id = parseInt(request.params.id);
+      const idArray = request.params.idArray;
+
       const blockedUser = await pool.query(
-        "UPDATE users SET status = $1 WHERE id = $2",
-        [userStatus.active, id]
+        "UPDATE users SET status = $1 WHERE id = ANY($2)",
+        [userStatus.active, idArray]
       );
-      response.status(200).send(`User unblocked with ID: ${id}`);
+      response.status(200).send(`Users unblocked with ID: ${idArray}`);
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
