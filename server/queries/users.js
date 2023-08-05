@@ -1,6 +1,5 @@
 const pool = require("../config");
 const Auth = require("../helpers/auth");
-// do i need parseInt() when getting an id from url
 
 const userStatus = {
   active: "ACTIVE",
@@ -90,7 +89,7 @@ const Users = {
 
   deleteUser: async (request, response) => {
     try {
-      const idArray = request.params.idArray;
+      const idArray = request.body.idArray;
 
       const deletedUser = pool.query("DELETE FROM users WHERE id = ANY($1)", [
         idArray,
@@ -103,7 +102,7 @@ const Users = {
 
   blockUser: async (request, response) => {
     try {
-      const idArray = request.params.idArray;
+      const idArray = request.body.idArray;
 
       const blockedUser = await pool.query(
         "UPDATE users SET status = $1 WHERE id = ANY($2)",
@@ -118,7 +117,7 @@ const Users = {
 
   unBlockUser: async (request, response) => {
     try {
-      const idArray = request.params.idArray;
+      const idArray = request.body.idArray;
 
       const blockedUser = await pool.query(
         "UPDATE users SET status = $1 WHERE id = ANY($2)",
