@@ -20,7 +20,7 @@ const Signup = () => {
 
         localStorage.setItem("token", JSON.stringify(data.token));
         toast.success("Successfully!");
-        // navigate(Routes.login);
+        navigate(Routes.login);
       },
       onError: ({ response }: any) => {
         const message = response.data.message;
