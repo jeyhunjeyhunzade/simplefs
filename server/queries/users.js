@@ -1,5 +1,6 @@
 const pool = require("../config");
 const Auth = require("../helpers/auth");
+const bcrypt = require("bcrypt");
 
 const userStatus = {
   active: "ACTIVE",
@@ -30,7 +31,7 @@ const Users = {
         return response.status(404).send({ message: "User can not be found." });
       }
 
-      if (password !== userById.password) {
+      if (!bcrypt.compareSync(password, userById.password)) {
         return response
           .status(400)
           .send({ message: "email and password does not match" });
@@ -46,6 +47,7 @@ const Users = {
       console.log(error.message, "Error message: ", response.status);
     }
   },
+
   createUser: async (request, response) => {
     const { email, password, name } = request.body;
     if (!email || !password || !name) {
@@ -58,7 +60,24 @@ const Users = {
         .send({ message: "Please enter a valid email address" });
     }
 
+    try {
+      const userQuery = await pool.query(
+        "SELECT * FROM users WHERE email = $1",
+        [email]
+      );
+
+      userById = userQuery.rows[0];
+      if (userById) {
+        return response
+          .status(404)
+          .send({ message: "Already registered with this email" });
+      }
+    } catch (error) {
+      console.log(error.message, "Error message: ", response.status);
+    }
+
     const hashPassword = Auth.hashPassword(password);
+
     try {
       const newUser = await pool.query(
         "INSERT INTO users ( email, password, name, status) VALUES ($1, $2, $3, $4) RETURNING *",
