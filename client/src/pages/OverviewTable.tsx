@@ -69,7 +69,7 @@ const OverviewTable = () => {
             <div className=" border-b border-gray-200 shadow sm:rounded-lg">
               <table
                 {...getTableProps()}
-                className="min-w-full divide-y divide-gray-200"
+                className="b-[#bcbcbc] min-w-full divide-y divide-gray-200"
               >
                 <thead className="bg-gray-10">
                   {headerGroups.map((headerGroup) => (
