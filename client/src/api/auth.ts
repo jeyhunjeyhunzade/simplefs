@@ -2,6 +2,12 @@ import axios from "axios";
 
 const localserver = "http://localhost:8000";
 
-export const login = (): Promise<any> => {
-  return axios.get(`${localserver}/login`).then((res) => res.data);
+interface LoginData {
+  email: string;
+  password: string;
+}
+
+export const loginAccount = async (loginData: LoginData) => {
+  const res = await axios.post(`${localserver}/login`, loginData);
+  return res?.data;
 };
