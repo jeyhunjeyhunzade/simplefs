@@ -30,7 +30,7 @@ const OverviewTable = () => {
         accessor: "lastLoginTime",
       },
       {
-        Header: "Registeration time",
+        Header: "Registration time",
         accessor: "registrationTime",
       },
       {

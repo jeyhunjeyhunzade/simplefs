@@ -27,15 +27,17 @@ const Users = {
 
       userById = userQuery.rows[0];
       if (!userById) {
-        return response.status(404).send("User can not be found.");
+        return response.status(404).send({ message: "User can not be found." });
       }
 
       if (password !== userById.password) {
-        return response.status(400).send("email and password does not match");
+        return response
+          .status(400)
+          .send({ message: "email and password does not match" });
       }
 
       if (userById.status !== userStatus.active) {
-        return response.status(403).send("User is blocked");
+        return response.status(403).send({ message: "User is blocked" });
       }
 
       const token = Auth.generateToken(userById.id);
@@ -94,7 +96,9 @@ const Users = {
       const deletedUser = pool.query("DELETE FROM users WHERE id = ANY($1)", [
         idArray,
       ]);
-      response.status(200).send(`Users deleted with ID: ${idArray}`);
+      response
+        .status(200)
+        .send({ message: `Users deleted with ID: ${idArray}` });
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
@@ -109,7 +113,9 @@ const Users = {
         [userStatus.blocked, idArray]
       );
 
-      response.status(200).send(`Users blocked with ID: ${idArray}`);
+      response
+        .status(200)
+        .send({ message: `Users blocked with ID: ${idArray}` });
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
@@ -123,7 +129,9 @@ const Users = {
         "UPDATE users SET status = $1 WHERE id = ANY($2)",
         [userStatus.active, idArray]
       );
-      response.status(200).send(`Users unblocked with ID: ${idArray}`);
+      response
+        .status(200)
+        .send({ message: `Users unblocked with ID: ${idArray}` });
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
