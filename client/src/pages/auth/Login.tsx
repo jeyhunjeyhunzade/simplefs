@@ -1,4 +1,16 @@
+import { useQuery } from "react-query";
+import { login } from "@app/api/auth";
+
 const Login = () => {
+  const { isLoading, error, data, isFetching } = useQuery<any, Error>(
+    "repoData",
+    login
+  );
+
+  if (error) {
+    return <div>{"An error has occurred: " + error.message}</div>;
+  }
+
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -20,7 +32,7 @@ const Login = () => {
                 htmlFor="email"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
-                Email
+                Email address
               </label>
             </div>
             <div className="mt-2">
