@@ -83,19 +83,23 @@ const Users = {
         "INSERT INTO users ( email, password, name, status) VALUES ($1, $2, $3, $4) RETURNING *",
         [email, hashPassword, name, userStatus.active]
       );
+
       response.status(201).json(newUser.rows[0]);
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
   },
+
   getUsers: async (_, response) => {
     try {
       const allUsers = await pool.query("SELECT * FROM users ORDER BY id ASC");
+      //TODO: passwords must not be shared here
       response.status(200).json(allUsers.rows);
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
   },
+
   getUserById: async (request, response) => {
     try {
       const id = parseInt(request.params.id);

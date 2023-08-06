@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { createAccount } from "@app/api/auth";
+import { getUsers } from "@app/api/getUsers";
 import { Routes } from "@app/router/rooter";
 
 const Signup = () => {
@@ -15,10 +16,7 @@ const Signup = () => {
   const { mutate, isLoading, error } = useMutation<any, Error, any>(
     createAccount,
     {
-      onSuccess: (data) => {
-        console.log("token?: ", data.token);
-
-        localStorage.setItem("token", JSON.stringify(data.token));
+      onSuccess: () => {
         toast.success("Successfully!");
         navigate(Routes.login);
       },
