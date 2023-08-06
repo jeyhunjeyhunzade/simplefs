@@ -1,21 +1,39 @@
 /* eslint-disable react/jsx-key */
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
+import { useQuery } from "react-query";
 import {
   useGlobalFilter,
   usePagination,
   useRowSelect,
   useTable,
 } from "react-table";
+import { getUsers } from "@app/api/getUsers";
 import StatusPill from "@app/components/StatusPill";
-import { data } from "@app/data/dummy";
 import { useRowSelectColumn } from "@lineup-lite/hooks";
 
 const OverviewTable = () => {
+  const [data, setData] = useState<any>([]);
+  const {
+    data: isGetUsersData,
+    isLoading,
+    error,
+  } = useQuery<any, Error, any>("users", getUsers);
+
+  if (error) {
+    const message = error?.response?.data.message;
+    toast.error(message);
+  }
+
+  useEffect(() => {
+    isGetUsersData && setData(isGetUsersData);
+  }, [isGetUsersData]);
+
   const columns: any = useMemo(
     () => [
       {
         Header: "User Id",
-        accessor: "userId",
+        accessor: "id",
       },
       {
         Header: "Name",
@@ -30,7 +48,7 @@ const OverviewTable = () => {
         accessor: "lastLoginTime",
       },
       {
-        Header: "Registration time",
+        Header: "Registeration time",
         accessor: "registrationTime",
       },
       {
@@ -49,6 +67,7 @@ const OverviewTable = () => {
     prepareRow,
     page,
     setPageSize,
+    selectedFlatRows,
   } = useTable(
     { columns, data },
     useGlobalFilter,
@@ -58,8 +77,12 @@ const OverviewTable = () => {
   );
 
   useEffect(() => {
-    setPageSize(data.length);
+    data.length && setPageSize(data.length);
   }, [setPageSize]);
+
+  useEffect(() => {
+    console.log("selectedFlatRows: ", selectedFlatRows);
+  }, [selectedFlatRows]);
 
   return (
     <div className="flex h-full items-center">

@@ -14,7 +14,7 @@ const Login = () => {
     loginAccount,
     {
       onSuccess: (data) => {
-        localStorage.setItem("token", JSON.stringify(data.token));
+        localStorage.setItem("token", data.token);
 
         navigate(Routes.homepage);
       },
