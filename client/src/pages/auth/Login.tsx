@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { loginAccount } from "@app/api/auth";
@@ -14,10 +15,12 @@ const Login = () => {
     {
       onSuccess: (data) => {
         localStorage.setItem("token", JSON.stringify(data.token));
+
         navigate(Routes.homepage);
       },
-      onError: () => {
-        //TODO: toastify error message
+      onError: ({ response }: any) => {
+        const message = response.data.message;
+        toast.error(message);
       },
     }
   );
