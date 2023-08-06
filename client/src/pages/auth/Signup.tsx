@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+import { Routes } from "@app/router/rooter";
+
 const Signup = () => {
+  const navigate = useNavigate();
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -23,7 +27,7 @@ const Signup = () => {
                 Email address
               </label>
             </div>
-            <div className="mt-2">
+            <div className="mt-1">
               <input
                 id="email"
                 name="email"
@@ -44,7 +48,7 @@ const Signup = () => {
                 Password
               </label>
             </div>
-            <div className="mt-2">
+            <div className="mt-1">
               <input
                 id="password"
                 name="password"
@@ -65,7 +69,7 @@ const Signup = () => {
                 Confirm Password
               </label>
             </div>
-            <div className="mt-2">
+            <div className="mt-1">
               <input
                 id="password-confirm"
                 name="password-confirm"
@@ -86,7 +90,7 @@ const Signup = () => {
                 Name
               </label>
             </div>
-            <div className="mt-2">
+            <div className="mt-1 ">
               <input
                 id="name"
                 name="name"
@@ -103,6 +107,18 @@ const Signup = () => {
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
               Sign up
+            </button>
+          </div>
+          <div>
+            <button
+              type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(Routes.login);
+              }}
+              className="flex w-full justify-center rounded-md bg-white px-3 py-1.5 text-sm font-semibold leading-6 shadow-sm hover:text-indigo-500"
+            >
+              Click to Login
             </button>
           </div>
         </form>

@@ -4,18 +4,24 @@ import Login from "@app/pages/auth/Login";
 import Signup from "@app/pages/auth/Signup";
 import RouterErrorPage from "@app/router/RouterErrorPage";
 
+export enum Routes {
+  homepage = "/",
+  login = "/login",
+  signup = "/signup",
+}
+
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: Routes.homepage,
     element: <App />,
     errorElement: <RouterErrorPage />,
   },
   {
-    path: "/login",
+    path: Routes.login,
     element: <Login />,
   },
   {
-    path: "/signup",
+    path: Routes.signup,
     element: <Signup />,
   },
 ]);
