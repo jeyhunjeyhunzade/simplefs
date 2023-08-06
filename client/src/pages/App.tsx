@@ -1,17 +1,5 @@
-import { FC, PropsWithChildren } from "react";
+import Button from "@app/components/Button";
 import OverviewTable from "./OverviewTable";
-
-interface ButtonProps {
-  text: string;
-}
-
-const Button = ({ children }: PropsWithChildren) => {
-  return (
-    <button className="ml-2 rounded-md bg-[#000000] p-1.5 font-mono font-bold text-white">
-      {children}
-    </button>
-  );
-};
 
 const App = () => {
   return (
@@ -26,7 +14,7 @@ const App = () => {
           <div className="flex justify-end p-6">
             <Button>Delete</Button>
             <Button>Block</Button>
-            <Button>Un Block</Button>
+            <Button>Unblock</Button>
           </div>
           <OverviewTable />
         </div>

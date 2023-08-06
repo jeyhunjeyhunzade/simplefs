@@ -6,9 +6,9 @@ import {
   useRowSelect,
   useTable,
 } from "react-table";
+import StatusPill from "@app/components/StatusPill";
+import { data } from "@app/data/dummy";
 import { useRowSelectColumn } from "@lineup-lite/hooks";
-import { data } from "../data/dummy";
-import StatusPill from "./StatusPill";
 
 const OverviewTable = () => {
   const columns: any = useMemo(
@@ -99,7 +99,7 @@ const OverviewTable = () => {
                           return (
                             <td
                               {...cell.getCellProps()}
-                              className="whitespace-nowrap px-6 py-5 font-sans text-lg"
+                              className="whitespace-nowrap px-6 py-5 text-lg"
                             >
                               {cell.render("Cell")}
                             </td>
