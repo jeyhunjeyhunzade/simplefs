@@ -1,10 +1,10 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { createAccount } from "@app/api/auth";
-import { getUsers } from "@app/api/getUsers";
 import { Routes } from "@app/router/rooter";
+import { errorHandler, successHandler } from "@app/utils";
+import { useMutation } from "@tanstack/react-query";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -13,19 +13,13 @@ const Signup = () => {
   const [name, setName] = useState("");
   const navigate = useNavigate();
 
-  const { mutate, isLoading, error } = useMutation<any, Error, any>(
-    createAccount,
-    {
-      onSuccess: () => {
-        toast.success("Successfully!");
-        navigate(Routes.login);
-      },
-      onError: ({ response }: any) => {
-        const message = response.data.message;
-        toast.error(message);
-      },
-    }
-  );
+  const { mutate, isLoading } = useMutation(createAccount, {
+    onSuccess: (response) => {
+      successHandler(response);
+      navigate(Routes.login);
+    },
+    onError: errorHandler,
+  });
 
   const handleSubmit = () => {
     if (!email || !password || !confirmPassword || !name) {

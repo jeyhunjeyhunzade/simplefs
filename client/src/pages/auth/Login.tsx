@@ -1,29 +1,22 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
-import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { loginAccount } from "@app/api/auth";
 import { Routes } from "@app/router/rooter";
+import { errorHandler } from "@app/utils";
+import { useMutation } from "@tanstack/react-query";
 
 const Login = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
-  const { mutate, isLoading, error } = useMutation<any, Error, any>(
-    loginAccount,
-    {
-      onSuccess: (data) => {
-        localStorage.setItem("token", data.token);
-
-        navigate(Routes.homepage);
-      },
-      onError: ({ response }: any) => {
-        const message = response.data.message;
-        toast.error(message);
-      },
-    }
-  );
+  const { mutate, isLoading } = useMutation(loginAccount, {
+    onSuccess: (data) => {
+      localStorage.setItem("token", data.token);
+      navigate(Routes.homepage);
+    },
+    onError: errorHandler,
+  });
 
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">

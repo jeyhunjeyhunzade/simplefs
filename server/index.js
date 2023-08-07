@@ -20,7 +20,7 @@ app.use(compression());
 //Users
 app.post("/login", queries.Users.loginUser);
 app.post("/signUp", queries.Users.createUser);
-app.get("/user", Auth.authenticateToken, queries.Users.getUserById);
+app.get("/users/:id", Auth.authenticateToken, queries.Users.getUserById);
 app.get("/users", Auth.authenticateToken, queries.Users.getUsers);
 app.delete("/users", Auth.authenticateToken, queries.Users.deleteUser);
 app.patch("/users/block", Auth.authenticateToken, queries.Users.blockUser);
