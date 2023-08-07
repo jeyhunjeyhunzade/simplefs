@@ -98,7 +98,7 @@ const Users = {
   getUsers: async (_, response) => {
     try {
       const allUsers = await pool.query(
-        "SELECT id, name, email, status FROM users ORDER BY id ASC"
+        "SELECT id, name, email, status, register_time, last_login FROM users ORDER BY id ASC"
       );
       response.status(200).json(allUsers.rows);
     } catch (error) {
