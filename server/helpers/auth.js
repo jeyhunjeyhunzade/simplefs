@@ -57,13 +57,13 @@ const Auth = {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
     if (token === null) {
-      return res.status(401).send({ message: "No token provided." }); // if there isn't any token
+      return res.status(400).send({ message: "No token provided." }); // if there isn't any token
     }
 
     jwt.verify(token, process.env.SECRET, async (err, user) => {
       if (err) {
         return res
-          .status(403)
+          .status(401)
           .send({ message: "Failed to authenticate token." });
       }
       req.user = user;
@@ -76,11 +76,11 @@ const Auth = {
         const userById = userQuery.rows[0];
 
         if (!userById) {
-          return res.status(404).send({ message: "User can not be found." });
+          return res.status(401).send({ message: "User can not be found." });
         }
 
         if (userById.status !== userStatus.active) {
-          return res.status(403).send({ message: "User is blocked" });
+          return res.status(401).send({ message: "User is blocked" });
         }
         next(); // pass the execution off to whatever request the client intended
       } catch (error) {

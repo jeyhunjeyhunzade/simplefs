@@ -41,10 +41,15 @@ const Users = {
         return response.status(403).send({ message: "User is blocked" });
       }
 
+      const updateLastLogin = await pool.query(
+        "UPDATE users SET last_login = current_timestamp WHERE id = $1",
+        [userById.id]
+      );
+
       const token = Auth.generateToken(userById.id);
       return response.status(201).json({ token });
     } catch (error) {
-      console.log(error.message, "Error message: ", response.status);
+      return response.status(500).send({ message: error.message });
     }
   },
 
@@ -73,7 +78,7 @@ const Users = {
           .send({ message: "Already registered with this email" });
       }
     } catch (error) {
-      console.log(error.message, "Error message: ", response.status);
+      return response.status(500).send({ message: error.message });
     }
 
     const hashPassword = Auth.hashPassword(password);
@@ -86,7 +91,7 @@ const Users = {
 
       response.status(200).json({ message: `Successfully created` });
     } catch (error) {
-      console.log(error.message, "response status: ", response.status);
+      return response.status(500).send({ message: error.message });
     }
   },
 
@@ -97,7 +102,7 @@ const Users = {
       );
       response.status(200).json(allUsers.rows);
     } catch (error) {
-      console.log(error.message, "response status: ", response.status);
+      return response.status(500).send({ message: error.message });
     }
   },
 
@@ -115,7 +120,7 @@ const Users = {
       );
       response.status(200).json(userById.rows[0]);
     } catch (error) {
-      console.log(error.message, "response status: ", response.status);
+      return response.status(500).send({ message: error.message });
     }
   },
 
@@ -136,7 +141,7 @@ const Users = {
         .status(200)
         .send({ message: `Users deleted with ID: ${userIds}` });
     } catch (error) {
-      console.log(error.message, "response status: ", response.status);
+      return response.status(500).send({ message: error.message });
     }
   },
 
@@ -159,7 +164,7 @@ const Users = {
         .status(200)
         .send({ message: `Users blocked with ID: ${userIds}` });
     } catch (error) {
-      console.log(error.message, "response status: ", response.status);
+      return response.status(500).send({ message: error.message });
     }
   },
 
@@ -181,7 +186,7 @@ const Users = {
         .status(200)
         .send({ message: `Users unblocked with ID: ${userIds}` });
     } catch (error) {
-      console.log(error.message, "response status: ", response.status);
+      return response.status(500).send({ message: error.message });
     }
   },
 };
