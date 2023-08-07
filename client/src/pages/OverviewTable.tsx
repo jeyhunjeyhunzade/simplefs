@@ -12,7 +12,7 @@ import { getUsers } from "@app/api/getUsers";
 import Button from "@app/components/Button";
 import StatusPill from "@app/components/StatusPill";
 import { Routes } from "@app/router/rooter";
-import { errorHandler, successHandler } from "@app/utils";
+import { dateFormatter, errorHandler, successHandler } from "@app/utils";
 import { useRowSelectColumn } from "@lineup-lite/hooks";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -60,7 +60,15 @@ const OverviewTable = () => {
   });
 
   useEffect(() => {
-    isSuccess && setData(usersData);
+    const usersDataWithFormattedTimes = usersData?.map((user: any) => {
+      return {
+        ...user,
+        last_login: dateFormatter(user.last_login, true),
+        register_time: dateFormatter(user.register_time),
+      };
+    });
+    console.log("usersDataWithFormattedTimes: ", usersDataWithFormattedTimes);
+    isSuccess && setData(usersDataWithFormattedTimes);
   }, [isSuccess]);
 
   const columns: any = useMemo(
@@ -79,11 +87,11 @@ const OverviewTable = () => {
       },
       {
         Header: "Last Login",
-        accessor: "lastLoginTime",
+        accessor: "last_login",
       },
       {
         Header: "Registeration time",
-        accessor: "registrationTime",
+        accessor: "register_time",
       },
       {
         Header: "Status",
