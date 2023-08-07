@@ -84,7 +84,7 @@ const Users = {
         [email, hashPassword, name, userStatus.active]
       );
 
-      response.status(201).json(newUser.rows[0]);
+      response.status(200).json({ message: `Successfully created` });
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
