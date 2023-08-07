@@ -1,6 +1,6 @@
-const pool = require("../config");
 const Auth = require("../helpers/auth");
 const bcrypt = require("bcrypt");
+const pool = require("../config");
 
 const userStatus = {
   active: "ACTIVE",
@@ -42,7 +42,7 @@ const Users = {
       }
 
       const token = Auth.generateToken(userById.id);
-      return response.status(201).json({ userById, token });
+      return response.status(201).json({ token });
     } catch (error) {
       console.log(error.message, "Error message: ", response.status);
     }
@@ -92,8 +92,9 @@ const Users = {
 
   getUsers: async (_, response) => {
     try {
-      const allUsers = await pool.query("SELECT * FROM users ORDER BY id ASC");
-      //TODO: passwords must not be shared here
+      const allUsers = await pool.query(
+        "SELECT id, name, email, status FROM users ORDER BY id ASC"
+      );
       response.status(200).json(allUsers.rows);
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
@@ -103,10 +104,16 @@ const Users = {
   getUserById: async (request, response) => {
     try {
       const id = parseInt(request.params.id);
-      const userById = await pool.query("SELECT * FROM users WHERE id = $1", [
-        id,
-      ]);
-      response.status(200).json(userById.rows);
+
+      if (!id) {
+        return response.status(400).send({ message: "please provide an id" });
+      }
+
+      const userById = await pool.query(
+        "SELECT id, name, email, status FROM users WHERE id = $1",
+        [id]
+      );
+      response.status(200).json(userById.rows[0]);
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
@@ -114,14 +121,20 @@ const Users = {
 
   deleteUser: async (request, response) => {
     try {
-      const idArray = request.body.idArray;
+      const userIds = request.body.userIds;
+
+      if (!userIds || !userIds.length) {
+        return response
+          .status(400)
+          .send({ message: "please provide at least one id" });
+      }
 
       const deletedUser = pool.query("DELETE FROM users WHERE id = ANY($1)", [
-        idArray,
+        userIds,
       ]);
       response
         .status(200)
-        .send({ message: `Users deleted with ID: ${idArray}` });
+        .send({ message: `Users deleted with ID: ${userIds}` });
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
@@ -129,16 +142,22 @@ const Users = {
 
   blockUser: async (request, response) => {
     try {
-      const idArray = request.body.idArray;
+      const userIds = request.body.userIds;
+
+      if (!userIds || !userIds.length) {
+        return response
+          .status(400)
+          .send({ message: "please provide at least one id" });
+      }
 
       const blockedUser = await pool.query(
         "UPDATE users SET status = $1 WHERE id = ANY($2)",
-        [userStatus.blocked, idArray]
+        [userStatus.blocked, userIds]
       );
 
       response
         .status(200)
-        .send({ message: `Users blocked with ID: ${idArray}` });
+        .send({ message: `Users blocked with ID: ${userIds}` });
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
@@ -146,15 +165,21 @@ const Users = {
 
   unBlockUser: async (request, response) => {
     try {
-      const idArray = request.body.idArray;
+      const userIds = request.body.userIds;
+
+      if (!userIds || !userIds.length) {
+        return response
+          .status(400)
+          .send({ message: "please provide at least one id" });
+      }
 
       const blockedUser = await pool.query(
         "UPDATE users SET status = $1 WHERE id = ANY($2)",
-        [userStatus.active, idArray]
+        [userStatus.active, userIds]
       );
       response
         .status(200)
-        .send({ message: `Users unblocked with ID: ${idArray}` });
+        .send({ message: `Users unblocked with ID: ${userIds}` });
     } catch (error) {
       console.log(error.message, "response status: ", response.status);
     }
