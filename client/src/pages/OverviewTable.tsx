@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-key */
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   useGlobalFilter,
   usePagination,
@@ -10,40 +11,57 @@ import { blockAccounts, deleteAccounts, unBlockAccounts } from "@app/api/auth";
 import { getUsers } from "@app/api/getUsers";
 import Button from "@app/components/Button";
 import StatusPill from "@app/components/StatusPill";
+import { Routes } from "@app/router/rooter";
 import { errorHandler, successHandler } from "@app/utils";
 import { useRowSelectColumn } from "@lineup-lite/hooks";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { queryClient } from "..";
 
 const OverviewTable = () => {
-  const [data, setData] = useState<any>([]);
-  const { data: usersData } = useQuery<any>(["users"], getUsers, {
-    onError: errorHandler,
-  });
+  const navigate = useNavigate();
 
-  const handleSuccess = (response: any) => {
+  const [data, setData] = useState<any>([]);
+
+  const onError = (error: unknown) => {
+    if (error instanceof AxiosError) {
+      console.log(error);
+      if (error.response?.status === 401) {
+        navigate("/login");
+      }
+    }
+    navigate(Routes.login);
+    errorHandler(error);
+  };
+
+  const onSuccess = (response: any) => {
     queryClient.invalidateQueries(["users"]);
     successHandler(response);
   };
 
+  const { data: usersData, isSuccess } = useQuery<any>(["users"], getUsers, {
+    onError,
+    retry: false,
+  });
+
   const { mutate: mutateBlock } = useMutation(blockAccounts, {
-    onSuccess: handleSuccess,
-    onError: errorHandler,
+    onSuccess,
+    onError,
   });
 
   const { mutate: mutateUnBlock } = useMutation(unBlockAccounts, {
-    onSuccess: handleSuccess,
-    onError: errorHandler,
+    onSuccess,
+    onError,
   });
 
   const { mutate: mutateDelete } = useMutation(deleteAccounts, {
-    onSuccess: handleSuccess,
-    onError: errorHandler,
+    onSuccess,
+    onError,
   });
 
   useEffect(() => {
-    usersData && setData(usersData);
-  }, [usersData]);
+    isSuccess && setData(usersData);
+  }, [isSuccess]);
 
   const columns: any = useMemo(
     () => [
@@ -93,8 +111,8 @@ const OverviewTable = () => {
   );
 
   useEffect(() => {
-    data?.length && setPageSize(data.length);
-  }, [setPageSize]);
+    data?.length && setPageSize(data?.length);
+  }, [setPageSize, data?.length]);
 
   const selectedIds = selectedFlatRows.map((item) => item.values?.id);
 

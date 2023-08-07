@@ -1,14 +1,7 @@
 import axios from "axios";
-
-const localserver = "http://localhost:8000";
-
-const token = localStorage.getItem("token");
-
-const config = {
-  headers: { Authorization: `Bearer ${token}` },
-};
+import { getConfig, serverUrl } from "./apiClient";
 
 export const getUsers = async () => {
-  const res = await axios.get(`${localserver}/users`, config);
+  const res = await axios.get(`${serverUrl}/users`, getConfig());
   return res?.data;
 };

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getConfig, serverUrl } from "./apiClient";
 
 interface LoginData {
   email: string;
@@ -11,44 +12,38 @@ interface SignUpData {
   name: string;
 }
 
-const localserver = "http://localhost:8000";
-const token = localStorage.getItem("token");
-const config = {
-  headers: { Authorization: `Bearer ${token}` },
-};
-
 export const loginAccount = async (loginData: LoginData) => {
-  const res = await axios.post(`${localserver}/login`, loginData);
+  const res = await axios.post(`${serverUrl}/login`, loginData);
   return res?.data;
 };
 
 export const createAccount = async (signUpData: SignUpData) => {
-  const res = await axios.post(`${localserver}/signUp`, signUpData);
+  const res = await axios.post(`${serverUrl}/signUp`, signUpData);
   return res?.data;
 };
 
 export const blockAccounts = async (userIds: string[]) => {
   const res = await axios.patch(
-    `${localserver}/users/block`,
+    `${serverUrl}/users/block`,
     { userIds },
-    config
+    getConfig()
   );
   return res?.data;
 };
 
 export const unBlockAccounts = async (userIds: string[]) => {
   const res = await axios.patch(
-    `${localserver}/users/unblock`,
+    `${serverUrl}/users/unblock`,
     { userIds },
-    config
+    getConfig()
   );
   return res?.data;
 };
 
 export const deleteAccounts = async (userIds: string[]) => {
-  const res = await axios.delete(`${localserver}/users`, {
+  const res = await axios.delete(`${serverUrl}/users`, {
     data: { userIds },
-    ...config,
+    ...getConfig(),
   });
   return res?.data;
 };

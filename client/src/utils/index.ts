@@ -18,3 +18,22 @@ export const errorHandler = (error: unknown) => {
 export const successHandler = (response: { message: string }) => {
   toast.success(response.message);
 };
+
+interface AccessToken {
+  token: string;
+  expirationDate: Date;
+}
+
+export const checkAuth = (): boolean => {
+  const accessToken = localStorage.getItem("token");
+  if (!accessToken) {
+    return false;
+  }
+
+  // const currentDateTime = new Date();
+  // if (currentDateTime >= accessToken.expirationDate) {
+  //   return false;
+  // }
+
+  return true;
+};
