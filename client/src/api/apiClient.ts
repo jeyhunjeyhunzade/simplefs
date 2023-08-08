@@ -6,4 +6,8 @@ export const getConfig = () => {
   };
 };
 
-export const serverUrl = "http://localhost:8000";
+// export const serverUrl = "http://localhost:8000";
+export const serverUrl =
+  process.env.NODE_ENV !== "production"
+    ? "http://localhost:8000"
+    : "https://simplefs-befa93c91c3c.herokuapp.com";
