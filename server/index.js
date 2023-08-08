@@ -26,6 +26,10 @@ app.delete("/users", Auth.authenticateToken, queries.Users.deleteUser);
 app.patch("/users/block", Auth.authenticateToken, queries.Users.blockUser);
 app.patch("/users/unblock", Auth.authenticateToken, queries.Users.unBlockUser);
 
+app.get("/", (_req, res) => {
+  res.send("we are on home");
+});
+
 app.listen(port, () => {
   console.log(`server started at http://localhost:${port}.`);
 });
