@@ -46,7 +46,7 @@ const Auth = {
         userId: id,
       },
       process.env.SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1h" }
     );
     return token;
   },
