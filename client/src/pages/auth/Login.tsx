@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginAccount } from "@app/api/auth";
+import { queryClient } from "@app/index";
 import { Routes } from "@app/router/rooter";
 import { errorHandler } from "@app/utils";
 import { useMutation } from "@tanstack/react-query";
@@ -13,6 +14,7 @@ const Login = () => {
   const { mutate, isLoading } = useMutation(loginAccount, {
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
+      queryClient.invalidateQueries();
       navigate(Routes.homepage);
     },
     onError: errorHandler,
