@@ -67,7 +67,6 @@ const OverviewTable = () => {
         register_time: dateFormatter(user.register_time),
       };
     });
-    console.log("usersDataWithFormattedTimes: ", usersDataWithFormattedTimes);
     isSuccess && setData(usersDataWithFormattedTimes);
   }, [isSuccess]);
 
