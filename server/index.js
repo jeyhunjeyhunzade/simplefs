@@ -7,7 +7,7 @@ require("dotenv").config();
 const Auth = require("./helpers/auth.js");
 
 //port
-const port = 8000;
+const port = process.env.PORT || 8080;
 
 //middleware
 const app = express();
