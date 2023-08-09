@@ -1,6 +1,6 @@
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-require("dotenv").config();
 const pool = require("../config");
 
 const userStatus = {
