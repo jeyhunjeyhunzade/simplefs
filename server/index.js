@@ -1,9 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 var helmet = require("helmet");
 var compression = require("compression");
 const queries = require("./queries");
-require("dotenv").config();
 const Auth = require("./helpers/auth.js");
 
 //port
