@@ -11,7 +11,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
-  const { mutate, isLoading } = useMutation(loginAccount, {
+  const { mutate } = useMutation(loginAccount, {
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
       queryClient.invalidateQueries();
