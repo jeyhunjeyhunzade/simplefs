@@ -1,8 +1,5 @@
 import { Status } from "@app/types/enums";
-
-function classNames(...classes: Array<string | null>) {
-  return classes.filter(Boolean).join(" ");
-}
+import { classNames } from "@app/utils";
 
 const StatusPill = ({ value }: { value: Status }) => {
   const status = value ? value : "unknown";
