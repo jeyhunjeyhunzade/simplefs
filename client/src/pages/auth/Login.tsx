@@ -11,7 +11,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
-  const { mutate } = useMutation(loginAccount, {
+  const { mutate, isLoading } = useMutation(loginAccount, {
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
       queryClient.invalidateQueries([["users"]]);
@@ -93,6 +93,7 @@ const Login = () => {
                   email,
                 });
               }}
+              disabled={isLoading}
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
               Sign in
@@ -106,6 +107,7 @@ const Login = () => {
                 e.preventDefault();
                 navigate(Routes.signup);
               }}
+              disabled={isLoading}
               className="flex w-full justify-center rounded-md bg-white px-3 py-1.5 text-sm font-semibold leading-6 shadow-sm hover:text-indigo-500"
             >
               Click to Sign up
