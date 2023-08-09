@@ -10,6 +10,7 @@ import {
 import { blockAccounts, deleteAccounts, unBlockAccounts } from "@app/api/auth";
 import { getUsers } from "@app/api/getUsers";
 import Button from "@app/components/Button";
+import Loader from "@app/components/Loader";
 import StatusPill from "@app/components/StatusPill";
 import { queryClient } from "@app/index";
 import { Routes } from "@app/router/rooter";
@@ -39,10 +40,14 @@ const OverviewTable = () => {
     successHandler(response);
   };
 
-  const { data: usersData } = useQuery<any>(["users"], getUsers, {
-    onError,
-    retry: false,
-  });
+  const { data: usersData, isLoading: isUsersDataLoading } = useQuery<any>(
+    ["users"],
+    getUsers,
+    {
+      onError,
+      retry: false,
+    }
+  );
 
   const { mutate: mutateBlock } = useMutation(blockAccounts, {
     onSuccess,
@@ -134,6 +139,8 @@ const OverviewTable = () => {
   const handleUnblock = () => {
     mutateUnBlock(selectedIds);
   };
+
+  if (isUsersDataLoading) return <Loader />;
 
   return (
     <div className="flex flex-col justify-center rounded-md border-[1px] border-zinc-900">
