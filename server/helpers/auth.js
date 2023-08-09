@@ -1,9 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-// require("dotenv").config();
+require("dotenv").config();
 const pool = require("../config");
-import * as dotenv from "dotenv";
-dotenv.config();
 
 const userStatus = {
   active: "ACTIVE",

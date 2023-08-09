@@ -14,7 +14,7 @@ const Login = () => {
   const { mutate } = useMutation(loginAccount, {
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
-      queryClient.invalidateQueries();
+      queryClient.invalidateQueries([["users"]]);
       navigate(Routes.homepage);
     },
     onError: errorHandler,
