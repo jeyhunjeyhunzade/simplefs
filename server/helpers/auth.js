@@ -1,7 +1,9 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-require("dotenv").config();
+// require("dotenv").config();
 const pool = require("../config");
+import * as dotenv from "dotenv";
+dotenv.config();
 
 const userStatus = {
   active: "ACTIVE",
@@ -45,7 +47,7 @@ const Auth = {
       {
         userId: id,
       },
-      `${process.env.SECRET}`,
+      process.env.SECRET,
       { expiresIn: "1h" }
     );
     return token;
@@ -60,7 +62,7 @@ const Auth = {
       return res.status(400).send({ message: "No token provided." }); // if there isn't any token
     }
 
-    jwt.verify(token, `${process.env.SECRET}`, async (err, user) => {
+    jwt.verify(token, process.env.SECRET, async (err, user) => {
       if (err) {
         return res
           .status(401)
