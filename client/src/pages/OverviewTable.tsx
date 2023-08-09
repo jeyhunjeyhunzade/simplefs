@@ -11,12 +11,12 @@ import { blockAccounts, deleteAccounts, unBlockAccounts } from "@app/api/auth";
 import { getUsers } from "@app/api/getUsers";
 import Button from "@app/components/Button";
 import StatusPill from "@app/components/StatusPill";
+import { queryClient } from "@app/index";
 import { Routes } from "@app/router/rooter";
 import { dateFormatter, errorHandler, successHandler } from "@app/utils";
 import { useRowSelectColumn } from "@lineup-lite/hooks";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { queryClient } from "..";
 
 const OverviewTable = () => {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ const OverviewTable = () => {
     successHandler(response);
   };
 
-  const { data: usersData, isSuccess } = useQuery<any>(["users"], getUsers, {
+  const { data: usersData } = useQuery<any>(["users"], getUsers, {
     onError,
     retry: false,
   });
@@ -67,8 +67,8 @@ const OverviewTable = () => {
         register_time: dateFormatter(user.register_time),
       };
     });
-    isSuccess && setData(usersDataWithFormattedTimes);
-  }, [isSuccess]);
+    usersData && setData(usersDataWithFormattedTimes);
+  }, [usersData]);
 
   const columns: any = useMemo(
     () => [
