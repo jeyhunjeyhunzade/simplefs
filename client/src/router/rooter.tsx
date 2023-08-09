@@ -1,3 +1,4 @@
+import { ReactElement } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "@app/pages/App";
 import Login from "@app/pages/auth/Login";
@@ -11,7 +12,11 @@ export enum Routes {
   signup = "/signup",
 }
 
-const PrivateRoute = ({ children }: any) => {
+interface PrivateRoute {
+  children: ReactElement;
+}
+
+const PrivateRoute = ({ children }: PrivateRoute) => {
   const isAuthenticated = checkAuth();
   return isAuthenticated ? children : <Navigate to="/login" />;
 };

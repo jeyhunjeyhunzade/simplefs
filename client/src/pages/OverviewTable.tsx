@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  Column,
   useGlobalFilter,
   usePagination,
   useRowSelect,
@@ -14,6 +15,7 @@ import Loader from "@app/components/Loader";
 import StatusPill from "@app/components/StatusPill";
 import { queryClient } from "@app/index";
 import { Routes } from "@app/router/rooter";
+import { ActionsResponse, UsersData } from "@app/types/types";
 import { dateFormatter, errorHandler, successHandler } from "@app/utils";
 import { useRowSelectColumn } from "@lineup-lite/hooks";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -22,7 +24,7 @@ import { AxiosError } from "axios";
 const OverviewTable = () => {
   const navigate = useNavigate();
 
-  const [data, setData] = useState<any>([]);
+  const [data, setData] = useState<UsersData[]>([]);
 
   const onError = (error: unknown) => {
     if (error instanceof AxiosError) {
@@ -35,19 +37,18 @@ const OverviewTable = () => {
     errorHandler(error);
   };
 
-  const onSuccess = (response: any) => {
+  const onSuccess = (response: ActionsResponse) => {
+    console.log("response: ", response);
     queryClient.invalidateQueries(["users"]);
     successHandler(response);
   };
 
-  const { data: usersData, isLoading: isUsersDataLoading } = useQuery<any>(
-    ["users"],
-    getUsers,
-    {
-      onError,
-      retry: false,
-    }
-  );
+  const { data: usersData, isLoading: isUsersDataLoading } = useQuery<
+    UsersData[]
+  >(["users"], getUsers, {
+    onError,
+    retry: false,
+  });
 
   const { mutate: mutateBlock } = useMutation(blockAccounts, {
     onSuccess,
@@ -65,17 +66,21 @@ const OverviewTable = () => {
   });
 
   useEffect(() => {
-    const usersDataWithFormattedTimes = usersData?.map((user: any) => {
-      return {
-        ...user,
-        last_login: dateFormatter(user.last_login, true),
-        register_time: dateFormatter(user.register_time),
-      };
-    });
-    usersData && setData(usersDataWithFormattedTimes);
+    if (usersData) {
+      const usersDataWithFormattedTimes: UsersData[] = usersData?.map(
+        (user: UsersData) => {
+          return {
+            ...user,
+            last_login: dateFormatter(user.last_login, true),
+            register_time: dateFormatter(user.register_time),
+          };
+        }
+      );
+      setData(usersDataWithFormattedTimes);
+    }
   }, [usersData]);
 
-  const columns: any = useMemo(
+  const columns: Column<UsersData>[] = useMemo(
     () => [
       {
         Header: "User Id",

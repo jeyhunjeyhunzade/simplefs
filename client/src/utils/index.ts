@@ -19,11 +19,6 @@ export const successHandler = (response: { message: string }) => {
   toast.success(response.message);
 };
 
-interface AccessToken {
-  token: string;
-  expirationDate: Date;
-}
-
 export const checkAuth = (): boolean => {
   const accessToken = localStorage.getItem("token");
   if (!accessToken) {
@@ -33,14 +28,17 @@ export const checkAuth = (): boolean => {
   return true;
 };
 
-export const dateFormatter = (date: Date, withHours = false): string => {
+export const dateFormatter = (
+  date: Date | string,
+  withHours = false
+): Date | string => {
   if (!date) {
     return "not logged in yet";
   }
 
   const dateTime = new Date(date);
 
-  let options: any = {
+  let options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
