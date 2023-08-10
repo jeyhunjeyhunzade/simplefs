@@ -1,16 +1,6 @@
+import { LoginData, SignUpData } from "@app/types/types";
 import axios from "axios";
 import { getConfig, serverUrl } from "./apiClient";
-
-interface LoginData {
-  email: string;
-  password: string;
-}
-
-interface SignUpData {
-  email: string;
-  password: string;
-  name: string;
-}
 
 export const loginAccount = async (loginData: LoginData) => {
   const res = await axios.post(`${serverUrl}/login`, loginData);
